@@ -1,0 +1,3 @@
+[app_launcher]
+tag_counter = tag_counter.tagcounter
+
