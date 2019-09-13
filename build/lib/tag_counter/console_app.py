@@ -1,5 +1,5 @@
-from process_url import count_tags, url_format, url_name
-from db_manager import TagManager
+from tag_counter.process_url import count_tags, url_format, url_name
+from tag_counter.db_manager import TagManager
 from loguru import logger
 import pickle
 import argparse
@@ -16,8 +16,8 @@ def get_insert(argsa):
     url = None
     logger.info('Scanning yaml synonyms for the key:{}'.format(argsa.get))
     try:
-        syn = yaml.load(open("synonyms.yaml"), yaml.SafeLoader)
-        url = syn[argsa.get] if syn[argsa.get] else argsa.get
+        syn = yaml.load(open("tag_counter/synonyms.yaml"), yaml.SafeLoader)
+        url = syn[argsa.get] if (argsa.get in syn) else argsa.get
     except KeyError as ke:
         logger.error('Wrong key! \n Exception:{}'.format(ke))
     except FileNotFoundError as fe:
@@ -57,8 +57,8 @@ def view_data(argsb):
     url = None
     logger.info('Scanning yaml synonyms for the key:{}'.format(argsb.view))
     try:
-        syn = yaml.load(open("synonyms.yaml"), yaml.SafeLoader)
-        url = syn[argsb.view] if syn[argsb.view] else argsb.view
+        syn = yaml.load(open("tag_counter/synonyms.yaml"), yaml.SafeLoader)
+        url = syn[argsb.view] if (argsb.view in syn) else argsb.view
     except KeyError as ke:
         logger.error('Wrong key! \n Exception:{}'.format(ke))
     except FileNotFoundError as fe:

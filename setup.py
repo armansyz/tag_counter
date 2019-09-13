@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="tag_counter_armansyz",
-    version="0.0.2",
+    version="0.0.5",
     author="Arman Syzdykov",
     author_email="syzdykov.arman@gmail.com",
     description="Package for the python beginners course",
@@ -21,7 +21,7 @@ setuptools.setup(
     python_requires='>=3.6',
     entry_points={
           'app_launcher': [
-              'tag_counter = tag_counter.tagcounter:tag_counter_main'
+              'tag_counter = tag_counter.tag_counter:main'
           ]
       },
     test_suite='tests',

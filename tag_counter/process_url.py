@@ -7,14 +7,14 @@ import re
 
 def url_format(url):
     """Returns a fully qualified url sorta"""
-    if not re.match('(?:http|https)://', url):
+    if not re.match(R"(?:http|https)://", str(url)):
         return 'http://{}'.format(url)
     return url
 
 
 def url_name(url):
     """Returns the name of the url provided"""
-    return re.findall(R"[^.]*\.[^.]{2,3}(?:\.[^.]{2,3})?$", url)[0]
+    return re.findall(R"[^.]*\.[^.]{2,3}(?:\.[^.]{2,3})?$", str(url))[0]
 
 
 def count_tags(full_url) -> {}:

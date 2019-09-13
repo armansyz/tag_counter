@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter.messagebox import showinfo, showerror
-from db_manager import TagManager
-from process_url import url_format, url_name, count_tags
+from tag_counter.db_manager import TagManager
+from tag_counter.process_url import url_format, url_name, count_tags
 from loguru import logger
 import yaml
 import pickle
@@ -18,8 +18,8 @@ def gui():
         url = None
         logger.info('Scanning yaml synonyms for the key:{}'.format(s))
         try:
-            syn = yaml.load(open("synonyms.yaml"), yaml.SafeLoader)
-            url = syn[s] if syn[s] else s
+            syn = yaml.load(open("tag_counter/synonyms.yaml"), yaml.SafeLoader)
+            url = syn[s] if (s in syn) else s
         except KeyError as ke:
             logger.error('Wrong key! \n Exception:{}'.format(ke))
         except FileNotFoundError as fe:
@@ -53,7 +53,7 @@ def gui():
             logger.info('Tags found in the database')
             tag_data = pickle.loads(tags.tag_data)
 
-        if tags:
+        if tag_data:
             num_tags = 'tag: count \n'
             logger.info('Output the tags')
 

@@ -1,5 +1,5 @@
-from db_model import TagQuery
-from db_connection import SessionManager, engine
+from tag_counter.db_model import TagQuery
+from tag_counter.db_connection import SessionManager, engine
 from sqlite3 import OperationalError
 from loguru import logger
 
