@@ -3,6 +3,7 @@ from db_manager import TagManager
 from loguru import logger
 import pickle
 import argparse
+import yaml
 
 
 def get_insert(argsa):
@@ -12,17 +13,29 @@ def get_insert(argsa):
     logger.info('Attempting to create tables if they do not exist')
     t.create_tables()
 
+    url = None
+    logger.info('Scanning yaml synonyms for the key:{}'.format(argsa.get))
+    try:
+        syn = yaml.load(open("synonyms.yaml"), yaml.SafeLoader)
+        url = syn[argsa.get] if syn[argsa.get] else argsa.get
+    except KeyError as ke:
+        logger.error('Wrong key! \n Exception:{}'.format(ke))
+    except FileNotFoundError as fe:
+        logger.error('File was not found \n Exception:{}'.format(fe))
+    except Exception as exc:
+        logger.error('Something bad happened \n Exception:{}'.format(exc))
+
     logger.info('Attempting to retrieve data from db')
-    s = t.get_tag(full_url=url_format(argsa.get)).first()
+    s = t.get_tag(full_url=url_format(url)).first()
     if not s:
         try:
             logger.info('No such tag info in the database')
             logger.info('Attempting to process the tags')
-            tag_data = count_tags(url_format(argsa.get)).items()
+            tag_data = count_tags(url_format(url)).items()
             logger.info('Attempting to insert tags into db')
             t. \
-                insert_tag(url_name(argsa.get),
-                           url_format(argsa.get),
+                insert_tag(url_name(url),
+                           url_format(url),
                            pickle.dumps(list(tag_data)))
             for tag, count in tag_data:
                 print(tag, ':', count)
@@ -41,12 +54,24 @@ def view_data(argsb):
     logger.info('Attempting to create tables if they do not exist')
     t.create_tables()
 
+    url = None
+    logger.info('Scanning yaml synonyms for the key:{}'.format(argsb.view))
+    try:
+        syn = yaml.load(open("synonyms.yaml"), yaml.SafeLoader)
+        url = syn[argsb.view] if syn[argsb.view] else argsb.view
+    except KeyError as ke:
+        logger.error('Wrong key! \n Exception:{}'.format(ke))
+    except FileNotFoundError as fe:
+        logger.error('File was not found \n Exception:{}'.format(fe))
+    except Exception as exc:
+        logger.error('Something bad happened \n Exception:{}'.format(exc))
+
     logger.info('Attempting to retrieve data from db')
-    s = t.get_tag(full_url=url_format(argsb.view)).first()
+    s = t.get_tag(full_url=url_format(url)).first()
 
     if not s:
         logger.info('No such tag info in the database')
-        print('no data on {}'.format(argsb.view))
+        print('no data on {}'.format(url))
     else:
         logger.info('Tags found in the database')
         print("id:{} \nsite_name:{} \nfull_url:{} \nquery_date:{} \ntag_data:".

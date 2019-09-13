@@ -3,6 +3,7 @@ from tkinter.messagebox import showinfo, showerror
 from db_manager import TagManager
 from process_url import url_format, url_name, count_tags
 from loguru import logger
+import yaml
 import pickle
 
 
@@ -14,24 +15,36 @@ def gui():
 
         s = entry.get()
 
+        url = None
+        logger.info('Scanning yaml synonyms for the key:{}'.format(s))
+        try:
+            syn = yaml.load(open("synonyms.yaml"), yaml.SafeLoader)
+            url = syn[s] if syn[s] else s
+        except KeyError as ke:
+            logger.error('Wrong key! \n Exception:{}'.format(ke))
+        except FileNotFoundError as fe:
+            logger.error('File was not found \n Exception:{}'.format(fe))
+        except Exception as e:
+            logger.error('Something bad happened \n Exception:{}'.format(e))
+
         t = TagManager()
         logger.info('Attempting to create tables if they do not exist')
         t.create_tables()
 
         logger.info('Attempting to retrieve data from db')
-        tags = t.get_tag(full_url=url_format(s)).first()
+        tags = t.get_tag(full_url=url_format(url)).first()
 
         tag_data = None
         if not tags:
             try:
                 logger.info('No such tag info in the database')
                 logger.info('Attempting to process the tags')
-                tag_data = count_tags(url_format(s)).items()
+                tag_data = count_tags(url_format(url)).items()
 
                 logger.info('Attempting to insert tags into db')
                 t. \
-                    insert_tag(url_name(s),
-                               url_format(s),
+                    insert_tag(url_name(url),
+                               url_format(url),
                                pickle.dumps(list(tag_data)))
             except Exception as e:
                 logger.error('Error has occurred \n Exception:{}'.format(e))
