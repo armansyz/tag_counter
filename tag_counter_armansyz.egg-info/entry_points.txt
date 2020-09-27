@@ -1,3 +1,0 @@
-[app_launcher]
-tag_counter = tag_counter.tag_counter:main
-
